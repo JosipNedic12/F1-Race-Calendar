@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1098747873560",
+    "firebase_url": "https://f1racecalendar-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "f1racecalendar",
+    "storage_bucket": "f1racecalendar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098747873560:android:ffce786c83ab40a110f66d",
+        "android_client_info": {
+          "package_name": "hr.ferit.josipnedic.f1racecalendar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRui0tyejZlXpotn-J0YkoMpmlaKyqXno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
