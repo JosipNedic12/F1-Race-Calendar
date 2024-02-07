@@ -48,7 +48,7 @@ fun ResultsScreen(
             .fillMaxWidth()
     ) {
         TopBar(navController = navController)
-        DriversContainer(viewModel = viewModel)
+        DriversContainer(race = race,viewModel = viewModel)
         }
 }
 
@@ -75,13 +75,13 @@ fun TopBar(
         verticalAlignment = Alignment.CenterVertically
     ){
 
-        CircularButton(iconResource = R.drawable.ic_arrow_back, color = Color.Black, onClick = {navController.navigateUp()})
+        CircularButton(iconResource = R.drawable.ic_arrow_back, color = Color.White, onClick = {navController.navigateUp()})
         Spacer(modifier = Modifier.width(82.dp))
         Text(
             text = "RESULTS",
             style = MaterialTheme.typography.bodyLarge.copy(
                 textAlign = TextAlign.Center,
-                color = Color.Black,
+                color = Color.White,
                 fontSize = 35.sp,
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Bold
@@ -92,26 +92,54 @@ fun TopBar(
 
 @Composable
 fun DriversContainer(
-viewModel: DriversViewModel
+    race: F1Race,
+    viewModel: DriversViewModel
 ) {
     LazyColumn(
         Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .paint(
                 painter = painterResource(id = R.drawable.background),
                 contentScale = ContentScale.FillBounds
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        if(race.results.size==0) {
+            item{
+                Text(text = "TBD",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    fontSize = 40.sp,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Bold
+                )
             )
-    ){
-        items(viewModel.driversData.size) {
-            ResultBox(driver = viewModel.driversData[it])
+            }
+        }
+        for (i in 0..race.results.size-1) {
+            val id = race.results[i]
+            items(viewModel.driversData.size) {
+                if (id == viewModel.driversData[it].id) {
+                    ResultBox(i,driver = viewModel.driversData[it])
+                }
+            }
         }
     }
 }
 
 @Composable
 fun ResultBox(
-  driver: Driver
+    place: Int,
+    driver: Driver
 ) {
+    val ordinalNumbers = listOf(
+        "1st", "2nd", "3rd", "4th", "5th",
+        "6th", "7th", "8th", "9th", "10th",
+        "11th", "12th", "13th", "14th", "15th",
+        "16th", "17th", "18th", "19th", "20th"
+    )
     Row (
         modifier = Modifier
             .padding(10.dp)
@@ -121,8 +149,7 @@ fun ResultBox(
             modifier = Modifier
                 .width(60.dp)
                 .height(60.dp)
-                .clip(shape = RoundedCornerShape(5.dp))
-                .background(color = Color.LightGray)
+                .clip(shape = RoundedCornerShape(10.dp))
         ){
 
             Image(
@@ -136,20 +163,66 @@ fun ResultBox(
         Box(
             modifier = Modifier
                 .padding(10.dp, 0.dp, 0.dp, 0.dp)
-                .fillMaxWidth()
+                .width(60.dp)
                 .height(60.dp)
-                .clip(shape = RoundedCornerShape(5.dp))
-                .background(color = Color.LightGray)
+                .clip(shape = RoundedCornerShape(15.dp))
+                .background(color = Color.Transparent),
+
         ){
-            Text(
-                text = driver.name,
+            Image(
+                painter = rememberAsyncImagePainter(model = driver.teamLogo),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
+                contentScale = ContentScale.FillBounds,
+                alignment = Alignment.CenterStart
+            )
+        }
+        Box(
+            modifier = Modifier
+                .padding(10.dp, 0.dp, 0.dp, 0.dp)
+                .width(180.dp)
+                .height(60.dp)
+                .clip(shape = RoundedCornerShape(15.dp))
+                .background(color = Color.Transparent)
+                .paint(
+                    painter = painterResource(id = R.drawable.topbackground),
+                    contentScale = ContentScale.FillBounds
+                )
+                .padding(5.dp, 0.dp, 0.dp, 0.dp),
+                contentAlignment = Alignment.CenterStart
+            ){
+            Text(text = driver.name,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    textAlign = TextAlign.Start,
+                    color = Color.Black,
+                    fontSize = 20.sp,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
+        Box(
+            modifier = Modifier
+                .padding(10.dp, 0.dp, 0.dp, 0.dp)
+                .width(60.dp)
+                .height(60.dp)
+                .clip(shape = RoundedCornerShape(15.dp))
+                .background(color = Color.Transparent)
+                .paint(
+                    painter = painterResource(id = R.drawable.topbackground),
+                    contentScale = ContentScale.FillBounds
+                ),
+            contentAlignment = Alignment.Center
+        ){
+            Text(text = ordinalNumbers[place],
                 style = MaterialTheme.typography.bodyLarge.copy(
                     textAlign = TextAlign.Center,
                     color = Color.Black,
-                    fontSize = 35.sp,
+                    fontSize = 25.sp,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold
-
                 )
             )
         }

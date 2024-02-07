@@ -2,8 +2,6 @@ package hr.ferit.josipnedic.f1racecalendar.Details
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -38,9 +35,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.google.firebase.Timestamp
 import hr.ferit.josipnedic.f1racecalendar.R
 import hr.ferit.josipnedic.f1racecalendar.Racing.F1Race
 import hr.ferit.josipnedic.f1racecalendar.Routes
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun RaceDetailScreen(
@@ -50,15 +52,6 @@ fun RaceDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color.Red,
-                        Color.White
-                    ),
-                    startY = 620f
-                )
-            )
     ) {
         TopBar(race = race,navController)
         ScrollableList(race = race)
@@ -83,7 +76,7 @@ fun CircularButton(
         modifier = Modifier
             .width(38.dp)
             .height(38.dp)
-            .border(BorderStroke(4.dp, color = Color.Black), shape = RoundedCornerShape(5.dp))
+            .border(BorderStroke(4.dp, color = Color.White), shape = RoundedCornerShape(5.dp))
 
     ) {
         Icon(
@@ -94,11 +87,11 @@ fun CircularButton(
 }
 
 @Composable
-fun TimeBox(name: String , time: String) {
+fun TimeBox(name: String , time: Timestamp) {
     Box(
         modifier = Modifier
             .padding(15.dp, 5.dp)
-            .clip(shape = RoundedCornerShape(10.dp))
+            .clip(shape = RoundedCornerShape(20.dp))
             .fillMaxWidth()
             .height(70.dp)
             .paint(
@@ -106,6 +99,7 @@ fun TimeBox(name: String , time: String) {
                 contentScale = ContentScale.FillBounds
             )
             .padding(5.dp, 10.dp),
+        contentAlignment = Alignment.Center
     ){
         Row(
             modifier = Modifier
@@ -122,16 +116,31 @@ fun TimeBox(name: String , time: String) {
                     fontWeight = FontWeight.Bold
                 )
             )
-            Spacer(modifier = Modifier.width(80.dp))
-            Text(text = time,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    textAlign = TextAlign.Right,
-                    color = Color.Black,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+            Spacer(modifier = Modifier.width(70.dp))
+            Column(
+                modifier = Modifier
+                    .padding(0.dp,0.dp,10.dp,0.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = unixDateToString(timestampToUnix(time)),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        textAlign = TextAlign.Right,
+                        color = Color.Black,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
-            )
-            Spacer(modifier = Modifier.width(10.dp))
+                Text(text = unixDayToString(timestampToUnix(time)),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        textAlign = TextAlign.Right,
+                        color = Color.Black,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                )
+            }
         }
     }
 }
@@ -158,18 +167,18 @@ fun TopBar(
         verticalAlignment = Alignment.CenterVertically
     ){
 
-        CircularButton(iconResource = R.drawable.ic_arrow_back, color = Color.Black, onClick = {navController.navigateUp()})
+        CircularButton(iconResource = R.drawable.ic_arrow_back, color = Color.White, onClick = {navController.navigateUp()})
         Text(
-            text = race.location,
+            text = race.location.toUpperCase(),
             style = MaterialTheme.typography.bodyLarge.copy(
                 textAlign = TextAlign.Center,
-                color = Color.Black,
+                color = Color.White,
                 fontSize = 35.sp,
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Bold
             )
         )
-        CircularButton(iconResource = R.drawable.flag, color = Color.Black, onClick = {navController.navigate(
+        CircularButton(iconResource = R.drawable.flag, color = Color.White, onClick = {navController.navigate(
             Routes.getRaceResultSPath(race.id))
         }
         )
@@ -187,19 +196,19 @@ fun ScrollableList(
                 painter = painterResource(id = R.drawable.background),
                 contentScale = ContentScale.FillBounds
             )
-            .padding(10.dp)
+            .padding(10.dp, 0.dp, 10.dp, 10.dp)
     ){
-        item { Spacer(modifier = Modifier.height(10.dp)) }
-        item{
-            Image(
-                painter = painterResource(id = race.image), contentDescription = null,
+        item {
+            Spacer(modifier = Modifier.height(10.dp))
+            AsyncImage(
+                model = race.image,
+                contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(shape = RoundedCornerShape(10.dp))
             )
-        }
-        item { Spacer(modifier = Modifier.height(10.dp)) }
+            Spacer(modifier = Modifier.height(10.dp)) }
         item {
             Text(text = "Circuit layout",
                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -213,18 +222,37 @@ fun ScrollableList(
         }
         item {  Spacer(modifier = Modifier.height(10.dp)) }
         item{
-            Image(
-                painter = painterResource(id = race.layout), contentDescription = null,
+            AsyncImage(
+                model = race.layout,
+                contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(shape = RoundedCornerShape(10.dp))
             )
         }
-        item{ TimeBox(name = "Practice1", time = race.training1Time)}
-        item{ TimeBox(name = "Practice2", time = race.training2Time)}
-        item{ TimeBox(name = "Practice3", time = race.training3Time)}
+        item{ TimeBox(name = "Practice 1", time = race.training1Time)}
+        item{ TimeBox(name = "Practice 2", time = race.training2Time)}
+        item{ TimeBox(name = "Practice 3", time = race.training3Time)}
         item{ TimeBox(name = "Qualifying", time = race.qualyTime)}
-        item{ TimeBox(name = "Race      ", time = race.raceTime)}
+        item{ TimeBox(name = "Race", time = race.raceTime)}
     }
+}
+
+
+fun timestampToUnix(timestamp: Timestamp): Long {
+    // Convert seconds and nanoseconds to milliseconds
+    val milliseconds = timestamp.seconds * 1000 + timestamp.nanoseconds / 1_000_000 // Convert nanoseconds to milliseconds
+    return milliseconds
+}
+
+fun unixDateToString(unixTimestamp: Long): String {
+    val date = Date(unixTimestamp)
+    val sdf = SimpleDateFormat("MMMM.dd", Locale.getDefault()) // Define your desired date format
+    return sdf.format(date)
+}
+fun unixDayToString(unixTimestamp: Long): String {
+    val date = Date(unixTimestamp)
+    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault()) // Define your desired date format
+    return sdf.format(date)
 }

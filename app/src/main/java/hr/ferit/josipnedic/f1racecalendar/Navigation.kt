@@ -8,7 +8,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import hr.ferit.josipnedic.f1racecalendar.Details.RaceDetailScreen
 import hr.ferit.josipnedic.f1racecalendar.Racing.RacingPage
-import hr.ferit.josipnedic.f1racecalendar.Racing.races
 import hr.ferit.josipnedic.f1racecalendar.Results.DriversViewModel
 import hr.ferit.josipnedic.f1racecalendar.Results.ResultsScreen
 
@@ -42,7 +41,7 @@ fun NavigationController(
     startDestination = Routes.SCREEN_RACING
   ) {
     composable(Routes.SCREEN_RACING) {
-      RacingPage(navController)
+      RacingPage(viewModel,navController)
     }
     composable(
       Routes.SCREEN_RACE_DETAILS,
@@ -55,7 +54,7 @@ fun NavigationController(
       backStackEntry.arguments?.getInt("raceId")?.let {id ->
         RaceDetailScreen(
           navController,
-          race = races[id]
+          race = viewModel.racesData[id]
         )
       }
     }
@@ -72,7 +71,7 @@ fun NavigationController(
         ResultsScreen(
           viewModel = viewModel,
           navController,
-          race = races[id],
+          race = viewModel.racesData[id],
         )
       }
     }
