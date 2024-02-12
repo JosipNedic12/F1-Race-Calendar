@@ -76,7 +76,7 @@ fun CircularButton(
         modifier = Modifier
             .width(38.dp)
             .height(38.dp)
-            .border(BorderStroke(4.dp, color = Color.White), shape = RoundedCornerShape(5.dp))
+            .border(BorderStroke(4.dp, color = Color.White), shape = RoundedCornerShape(10.dp))
 
     ) {
         Icon(
@@ -124,22 +124,35 @@ fun TimeBox(name: String , time: Timestamp) {
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = unixDateToString(timestampToUnix(time)),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        textAlign = TextAlign.Right,
-                        color = Color.Black,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                if(unixDateToString(timestampToUnix(time))=="February.07"){
+                        Text(text ="TBC",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                textAlign = TextAlign.Right,
+                                color = Color.Black,
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }else {
+                    Text(
+                        text = unixDateToString(timestampToUnix(time)),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            textAlign = TextAlign.Right,
+                            color = Color.Black,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
-                )
-                Text(text = unixDayToString(timestampToUnix(time)),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        textAlign = TextAlign.Right,
-                        color = Color.Black,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
+                    Text(
+                        text = unixDayToString(timestampToUnix(time)),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            textAlign = TextAlign.Right,
+                            color = Color.Black,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
                     )
-                )
+                }
             }
         }
     }

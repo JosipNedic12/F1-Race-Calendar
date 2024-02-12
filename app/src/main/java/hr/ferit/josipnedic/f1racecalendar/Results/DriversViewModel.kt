@@ -39,6 +39,7 @@ class DriversViewModel: ViewModel() {
             }
         }
     }
+
     private fun fetchRaceDatabaseData() {
         db.collection("Races")
             .orderBy("id")
@@ -56,12 +57,26 @@ class DriversViewModel: ViewModel() {
 
             val race = data.toObject(F1Race::class.java)
             if (race != null) {
-                race.id = data.id.toInt()-1
+                race.id = data.id.toInt() - 1
                 racesData.add(race)
             }
         }
     }
+
+    fun saveRaceResultToFirestore(raceId: String, raceResult: List<String>) {
+        val db = Firebase.firestore
+        val raceResultsCollection = db.collection("Races")
+        val raceResultDocument = raceResultsCollection.document(raceId)
+        raceResultDocument
+            .update("results", raceResult)
+            .addOnSuccessListener {
+                // Race result array updated successfully
+                println("Race result array updated successfully")
+            }
+            .addOnFailureListener { e ->
+                // Error updating race result array
+                println("Error updating race result array: $e")
+            }
+    }
 }
-
-
 

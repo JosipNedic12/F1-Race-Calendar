@@ -10,6 +10,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +22,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,8 +57,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import hr.ferit.josipnedic.f1racecalendar.Details.CircularButton
 import hr.ferit.josipnedic.f1racecalendar.R
 import hr.ferit.josipnedic.f1racecalendar.Results.DriversViewModel
+import hr.ferit.josipnedic.f1racecalendar.Routes
 import hr.ferit.josipnedic.f1racecalendar.Routes.getRaceDetailsPath
 
 @Composable
@@ -67,7 +74,7 @@ fun RacingPage(
         Modifier.
         fillMaxWidth()
     ){
-            HomeTitle()
+        HomeTitle(navController)
         Box(modifier = Modifier
             .fillMaxWidth()
             .height(55.dp)
@@ -91,20 +98,23 @@ fun RacingPage(
 
 @Composable
 fun HomeTitle(
+    navController: NavController,
         title: String = stringResource(id = R.string.home_title),
 ) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(55.dp)
             .paint(
                 painter = painterResource(id = R.drawable.topbackground1),
                 contentScale = ContentScale.FillBounds
-            ),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            )
+            .padding(10.dp, 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
 
     ) {
+        Spacer(modifier = Modifier.width(20.dp))
         Text(
             text = title,
             style = MaterialTheme.typography.bodyLarge.copy(
@@ -115,6 +125,8 @@ fun HomeTitle(
                 fontWeight = FontWeight.Bold
 
             )
+        )
+        CircularButton(iconResource = R.drawable.user, color = White, onClick = {navController.navigate(Routes.getStandingsPath())}
         )
     }
 }
@@ -233,7 +245,7 @@ fun SearchBar(
             }
         ),
         modifier = Modifier
-            .padding(10.dp,0.dp,10.dp,5.dp)
+            .padding(10.dp, 0.dp, 10.dp, 5.dp)
             .fillMaxWidth()
             .border(BorderStroke(4.dp, color = Black), shape = RoundedCornerShape(25.dp)),
     )
@@ -250,5 +262,32 @@ fun DriversViewModel.filterRaces(searchQuery: String): List<F1Race> {
                     race.date.contains(searchQuery, ignoreCase = true) ||
                     race.name.contains(searchQuery, ignoreCase = true)
         }
+    }
+}
+
+@Composable
+fun CircularButton(
+    @DrawableRes iconResource: Int, color: Color,
+    onClick: () -> Unit = {}
+) {
+    Button(
+        contentPadding = PaddingValues(5.dp,5.dp),
+        onClick = { onClick() },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = color,
+
+            ),
+        shape = RoundedCornerShape(5.dp),
+        modifier = Modifier
+            .width(38.dp)
+            .height(38.dp)
+            .border(BorderStroke(4.dp, color = White), shape = RoundedCornerShape(10.dp))
+
+    ) {
+        Icon(
+            painter = painterResource(id = iconResource),
+            contentDescription = null,
+        )
     }
 }

@@ -7,14 +7,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import hr.ferit.josipnedic.f1racecalendar.Details.RaceDetailScreen
+import hr.ferit.josipnedic.f1racecalendar.ImportResultScreen.RaceResultInputScreen
 import hr.ferit.josipnedic.f1racecalendar.Racing.RacingPage
 import hr.ferit.josipnedic.f1racecalendar.Results.DriversViewModel
 import hr.ferit.josipnedic.f1racecalendar.Results.ResultsScreen
+import hr.ferit.josipnedic.f1racecalendar.Standings.StandingsScreen
 
 object Routes {
 
   const val SCREEN_RACING = "racingList"
   const val SCREEN_RACE_DETAILS = "raceDetails/{raceId}"
+  const val SCREEN_STANDINGS = "standings"
+  const val SCREEN_IMPORTTOFIREBASE = "results"
   fun getRaceDetailsPath(raceId: Int?): String {
     if (raceId != null && raceId != -1) {
       return "raceDetails/$raceId"
@@ -29,7 +33,18 @@ object Routes {
     }
     return "raceResults/0"
   }
+
+  fun getStandingsPath(): String {
+    return "standings"
+  }
+  fun getResultImportPath(): String {
+    return "results"
+  }
 }
+
+
+
+
 
 @Composable
 fun NavigationController(
@@ -41,7 +56,7 @@ fun NavigationController(
     startDestination = Routes.SCREEN_RACING
   ) {
     composable(Routes.SCREEN_RACING) {
-      RacingPage(viewModel,navController)
+      RacingPage(viewModel, navController)
     }
     composable(
       Routes.SCREEN_RACE_DETAILS,
@@ -51,7 +66,7 @@ fun NavigationController(
         }
       )
     ) { backStackEntry ->
-      backStackEntry.arguments?.getInt("raceId")?.let {id ->
+      backStackEntry.arguments?.getInt("raceId")?.let { id ->
         RaceDetailScreen(
           navController,
           race = viewModel.racesData[id]
@@ -67,13 +82,20 @@ fun NavigationController(
         }
       )
     ) { backStackEntry ->
-      backStackEntry.arguments?.getInt("raceId")?.let {id ->
+      backStackEntry.arguments?.getInt("raceId")?.let { id ->
         ResultsScreen(
           viewModel = viewModel,
           navController,
           race = viewModel.racesData[id],
         )
       }
+    }
+
+    composable(Routes.SCREEN_STANDINGS) {
+     StandingsScreen(viewModel = viewModel, navController = navController)
+    }
+    composable(Routes.SCREEN_IMPORTTOFIREBASE) {
+      RaceResultInputScreen(viewModel,navController)
     }
   }
 }

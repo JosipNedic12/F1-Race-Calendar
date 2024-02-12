@@ -5,6 +5,7 @@ data class Driver (
     var image: String = "",
     var name: String = "",
     var teamName: String = "",
-    var teamLogo: String = ""
+    var teamLogo: String = "",
+    var points: Int = 0
 )
 
